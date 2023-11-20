@@ -1,18 +1,25 @@
 import multer from "multer";
+const cloudinary = require('cloudinary').v2;
 import { v2 as cloudinary} from 'cloudinary'
-
 require("dotenv").config();
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const myUploadMiddleware = upload.array("file");
 
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET, 
+//   secure: true,
+// });
+
 cloudinary.config({
-  cloud_name: 'dzrx0mq9y',
-  api_key: '476383583397341',
-  api_secret: 't2OkAaBrj35qnesEfxNCABaM774',
-  secure: true,
-});
+    cloud_name: 'christian-borges',
+    api_key: '476383583397341',
+    api_secret: 't2OkAaBrj35qnesEfxNCABaM774', 
+    secure: true,
+  });
 
 cloudinary.uploader.upload;
 
@@ -34,7 +41,7 @@ export default async function handler(req, res) {
       const b64 = Buffer.from(file.buffer).toString("base64");
       let dataURI = "data:" + file.mimetype + ";base64," + b64;
       const response = await cloudinary.uploader.upload(dataURI, {
-        folder: "dropzone-images",
+        folder: "dropzone-images"
       });
     } catch (error) {
       res.status(400).json(error);
@@ -46,6 +53,6 @@ export default async function handler(req, res) {
 
 export const config = {
   api: {
-    bodyParser: false,
-  },
+    bodyParser: false
+  }
 };

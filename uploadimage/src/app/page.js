@@ -7,40 +7,39 @@ import axios from 'axios'
 export default function Home() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('') 
+
+  const [imgs, setImgs] = useState()
+
+
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     acceptedFiles.forEach((file) => {
       setSelectedImages((prevState) => [...prevState, file])
     });
   }, [])  
 
-  const { 
-    getRootProps, 
-    getInputProps, 
-    isDragActive, 
-    isDragAccept, 
-    isDragReject 
-  } = useDropzone({ 
-    onDrop, 
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ 
     accept: {
       'image/png': ['.png'],
       'image/jpg': ['.jpg'],
       'image/jpeg': ['.jpeg'],
     },
-    maxFiles: 2
+    onDrop,
+    maxFiles: 1
   });
 
   const onUpload = async () => {
-    setUploadStatus("Uploading....");
     const formData = new FormData();
+    setUploadStatus("Uploading....");
     selectedImages.forEach((image) => {
       formData.append("file", image);
+      formData.append('upload_preset', 'lekew37j')
     });
     try {
       const response = await axios.post(
-        "${cloudinary.config}/api/upload",
+        'https://api.cloudinary.com/v1_1/christian-borges/image/upload/',
         formData
       );
-      console.log(response.data);
+      console.log(response);
       setUploadStatus("Upload realizado com sucesso");
     } catch (error) {
       console.log("imageUpload" + error);
@@ -55,6 +54,16 @@ export default function Home() {
     })
     [isDragAccept, isDragReject]
   )
+
+
+  const handleChange = (e) => {
+    console.log(e.target.files)
+    const data = new FileReader()
+    data.addEventListener('load', () => {
+      setImgs(data.result)
+    })
+    data.readAsBinaryString(e.target.files[0])
+  }
   
   return (
     <div className={styles.container}>
@@ -74,15 +83,17 @@ export default function Home() {
           <img src={`${URL.createObjectURL(image)}`}/>
          ))}
       </div>
+      <div>
+        <img src={imgs}/>
+      </div>
       { selectedImages.length > 0 && (
         <div className={styles.btn}>
           <button onClick={onUpload}>Enviado para cloudinary</button>
           <p>{uploadStatus}</p>
         </div>
-      )
-
-      }
+      )}
     </div>
   )
 }
 //https://cloudinary.com/blog/guest_post/upload-images-with-react-dropzone
+//https://www.youtube.com/watch?v=VxF0CFcsQmE
