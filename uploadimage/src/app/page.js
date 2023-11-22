@@ -8,9 +8,6 @@ export default function Home() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('') 
 
-  const [imgs, setImgs] = useState()
-
-
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     acceptedFiles.forEach((file) => {
       setSelectedImages((prevState) => [...prevState, file])
@@ -55,36 +52,21 @@ export default function Home() {
     [isDragAccept, isDragReject]
   )
 
-
-  const handleChange = (e) => {
-    console.log(e.target.files)
-    const data = new FileReader()
-    data.addEventListener('load', () => {
-      setImgs(data.result)
-    })
-    data.readAsBinaryString(e.target.files[0])
-  }
-  
   return (
     <div className={styles.container}>
       <div className={styles.dropzone} {...getRootProps({ style })}>
-        <input {...getInputProps()} />
-        {
-          isDragActive ? (
-            <p>Drop File(s) here ...</p>
+        <input {...getInputProps()}/>
+        { isDragActive ? (
+            <p>Solte o(s) arquivo(s) aqui...</p>
           ):(
-            <p>Drag and drop file(s) here, or click to select files</p>
-          )
-        }
+            <p>Arraste e solte arquivo(s) aqui ou clique para selecionar arquivos</p>
+          )}
       </div>
       <div className={styles.images}>
         {selectedImages.length > 0 &&
          selectedImages.map((image, index) => (
           <img src={`${URL.createObjectURL(image)}`}/>
          ))}
-      </div>
-      <div>
-        <img src={imgs}/>
       </div>
       { selectedImages.length > 0 && (
         <div className={styles.btn}>
